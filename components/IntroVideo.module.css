@@ -1,34 +1,33 @@
-/* Full-screen overlay */
+/* Full-screen overlay — use dvh so mobile browser chrome doesn't cause gaps */
 .overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;          /* fallback for old browsers */
+  height: 100dvh;         /* dynamic viewport height — accounts for mobile browser bars */
   z-index: 999;
   background: #000;
   overflow: hidden;
 }
 
 /*
-  Reliable full-cover video for ALL devices including iOS Safari.
-  object-fit:cover is buggy on some mobile browsers so we use the
-  translate(-50%,-50%) + min-width/height trick instead.
+  JS in IntroVideo.tsx sets explicit pixel width/height on this element
+  after loadedmetadata fires, so the video always fills the screen.
+  These CSS rules act as a safe fallback only.
 */
 .video {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
-  /* Grow to fill whichever dimension is larger */
-  min-width: 100%;
-  min-height: 100%;
-
-  /* Let the browser size it while keeping aspect ratio */
-  width: auto;
-  height: auto;
-
-  /* Fallback for browsers that do support object-fit */
+  /* JS overrides width/height; these just prevent a flash of tiny video */
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   object-position: center center;
+  /* Prevent iOS from scaling the video element itself */
+  -webkit-transform: translate(-50%, -50%);
 }
 
 /* Skip button — bottom-right corner */
