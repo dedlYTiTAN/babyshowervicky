@@ -1,0 +1,277 @@
+/* ── Hero wrapper ────────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Base gradient — orbs + bgLayer animate on top */
+  background: linear-gradient(145deg, #fef3e8 0%, #d6ecfa 48%, #ffe0ea 100%);
+  padding: 100px 1.5rem 100px;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* ── Parallax background ────────────────────────────────────────────────── */
+.bgLayer {
+  position: absolute;
+  inset: -30% 0 -10% 0;           /* oversized so parallax doesn't show edge */
+  background:
+    radial-gradient(ellipse 70% 55% at 20% 30%, rgba(179,217,247,0.45) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 50% at 80% 70%, rgba(255,194,212,0.40) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 45% at 50% 50%, rgba(240,201,110,0.18) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Glowing orbs ───────────────────────────────────────────────────────── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orbBlue {
+  width: 460px; height: 460px;
+  background: radial-gradient(circle, rgba(179,217,247,0.7) 0%, transparent 70%);
+  top: -10%; left: -12%;
+}
+
+.orbPink {
+  width: 380px; height: 380px;
+  background: radial-gradient(circle, rgba(255,194,212,0.65) 0%, transparent 70%);
+  bottom: 5%; right: -8%;
+}
+
+.orbGold {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(240,201,110,0.55) 0%, transparent 70%);
+  bottom: 20%; left: 30%;
+}
+
+/* ── Twinkling sparks ───────────────────────────────────────────────────── */
+.spark {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--gold);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Floating emoji decorations ─────────────────────────────────────────── */
+.floater {
+  position: absolute;
+  user-select: none;
+  pointer-events: none;
+  line-height: 1;
+  z-index: 1;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.08));
+}
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.15rem;
+}
+
+/* ── Invite badge ───────────────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 0.45rem 1.4rem;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1.5px solid var(--gold);
+  border-radius: 24px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--gold-deep);
+  letter-spacing: 0.07em;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 16px rgba(240,201,110,0.18);
+}
+
+/* ── Title ──────────────────────────────────────────────────────────────── */
+.title {
+  font-family: var(--font-script);
+  font-size: clamp(3.2rem, 10vw, 6rem);
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.05;
+  /* Soft text-shadow to lift title off gradient */
+  text-shadow:
+    0 2px 0 rgba(255,255,255,0.6),
+    0 4px 20px rgba(61,43,31,0.12);
+}
+
+/* ── Subtitle ───────────────────────────────────────────────────────────── */
+.subtitle {
+  font-size: 1.08rem;
+  color: var(--text-mid);
+  font-style: italic;
+  letter-spacing: 0.01em;
+}
+
+/* ── Divider ────────────────────────────────────────────────────────────── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 320px;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  display: block;
+  border-radius: 2px;
+}
+
+.dividerIcon { font-size: 1.2rem; flex-shrink: 0; }
+
+/* ── Parents ────────────────────────────────────────────────────────────── */
+.parents {
+  font-family: var(--font-script);
+  font-size: clamp(2.1rem, 6.5vw, 3.5rem);
+  font-weight: 600;
+  color: var(--text-dark);
+  line-height: 1.2;
+  cursor: default;
+}
+
+.parentName {
+  display: inline-block;
+  transition: color 0.25s;
+}
+
+.parentsAmp {
+  font-size: 1.4rem;
+  color: var(--text-light);
+  vertical-align: middle;
+  display: inline-block;
+  margin: 0 0.15rem;
+}
+
+/* ── Info chips ─────────────────────────────────────────────────────────── */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  cursor: default;
+}
+
+.chip {
+  padding: 0.45rem 1.05rem;
+  background: rgba(255, 255, 255, 0.74);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 22px;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--text-mid);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  display: inline-block;
+}
+
+/* ── Tagline ────────────────────────────────────────────────────────────── */
+.tagline {
+  font-size: 1rem;
+  color: var(--text-mid);
+  max-width: 460px;
+  line-height: 1.78;
+}
+
+/* ── CTA row ────────────────────────────────────────────────────────────── */
+.ctaRow {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.4rem;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.95rem 2.5rem;
+  background: linear-gradient(135deg, var(--gold) 0%, #e8b84b 100%);
+  color: var(--text-dark);
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 50px;
+  box-shadow: 0 4px 22px rgba(240, 201, 110, 0.42);
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+
+.ctaSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.95rem 2.2rem;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text-dark);
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 50px;
+  box-shadow: 0 4px 22px rgba(255, 194, 212, 0.35);
+  cursor: pointer;
+  border: 1.5px solid rgba(255, 194, 212, 0.6);
+  letter-spacing: 0.02em;
+}
+
+/* ── Scroll hint ─────────────────────────────────────────────────────────── */
+.scrollHint {
+  margin-top: 1rem;
+  width: 26px; height: 42px;
+  border: 2px solid rgba(61, 43, 31, 0.2);
+  border-radius: 13px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 6px;
+}
+
+.scrollDot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gold-deep);
+  opacity: 0.7;
+}
+
+/* ── Wave ────────────────────────────────────────────────────────────────── */
+.wave {
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 80px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.wave svg { width: 100%; height: 100%; display: block; }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .hero   { padding-top: 90px; padding-bottom: 90px; }
+  .chip   { font-size: 0.8rem; padding: 0.35rem 0.85rem; }
+  .cta,
+  .ctaSecondary { padding: 0.8rem 1.8rem; font-size: 0.95rem; }
+  .orbBlue  { width: 280px; height: 280px; }
+  .orbPink  { width: 240px; height: 240px; }
+  .orbGold  { width: 200px; height: 200px; }
+  .scrollHint { display: none; }
+}

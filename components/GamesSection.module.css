@@ -1,0 +1,211 @@
+.section {
+  padding: 6rem 1.5rem;
+  background: linear-gradient(160deg, var(--beige) 0%, var(--cream) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+/* ── Heading ──────────────────────────────────────────────────────────── */
+.heading { text-align: center; }
+
+.title {
+  font-family: var(--font-script);
+  font-size: clamp(2rem, 5vw, 3rem);
+  color: var(--text-dark);
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--text-light);
+  margin-top: 0.4rem;
+  font-style: italic;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 520px;
+  text-align: center;
+}
+
+/* ── Vote buttons ─────────────────────────────────────────────────────── */
+.teamButtons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+}
+
+.teamBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1.1rem 2rem;
+  border-radius: 50px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: box-shadow 0.2s, opacity 0.2s;
+  border: 2.5px solid transparent;
+}
+
+.teamBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.boyBtn  { background: var(--blue-soft);  color: var(--blue-deep);  border-color: var(--blue);  }
+.girlBtn { background: var(--pink-soft);  color: var(--pink-deep);  border-color: var(--pink);  }
+
+.btnEmoji { font-size: 1.5rem; line-height: 1; }
+.btnLabel { font-size: 1.05rem; }
+
+.btnDivider {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* ── Voted banner ─────────────────────────────────────────────────────── */
+.picked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 2rem;
+  border-radius: var(--radius-md);
+  width: 100%;
+}
+
+.pickedBoy  { background: var(--blue-soft);  }
+.pickedGirl { background: var(--pink-soft);  }
+
+.pickedEmoji { font-size: 3rem; display: block; line-height: 1; }
+
+.pickedText {
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  margin-top: 0.2rem;
+}
+
+.pickedSub {
+  font-size: 0.88rem;
+  color: var(--text-mid);
+  font-style: italic;
+}
+
+/* ── Tally ────────────────────────────────────────────────────────────── */
+.tally {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  border-top: 1.5px solid var(--beige);
+  padding-top: 1.5rem;
+}
+
+.tallyTitle {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-mid);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+/* Each vote row */
+.tallyRow {
+  display: grid;
+  /* emoji | name | bar | count | pct */
+  grid-template-columns: 1.4rem 2.8rem 1fr 2rem 2.8rem;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.tallyEmoji {
+  font-size: 1.1rem;
+  line-height: 1;
+  text-align: center;
+}
+
+.tallyName {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  text-align: left;
+}
+
+/* Progress bar */
+.barTrack {
+  height: 14px;
+  background: var(--beige);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 10px;
+  min-width: 3px;
+}
+
+.barBoy  { background: linear-gradient(90deg, var(--blue-deep), var(--blue));  }
+.barGirl { background: linear-gradient(90deg, var(--pink-deep), var(--pink));  }
+
+/* Count number */
+.tallyNum {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Percentage */
+.tallyPct {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  font-weight: 500;
+  text-align: right;
+}
+
+/* ── Change vote ──────────────────────────────────────────────────────── */
+.changeBtn {
+  font-size: 0.82rem;
+  color: var(--text-light);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.2s;
+  margin-top: -0.75rem;
+}
+
+.changeBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.changeBtn:hover:not(:disabled) { color: var(--text-mid); }
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .card    { padding: 2rem 1.25rem 1.75rem; }
+  .teamBtn { padding: 1rem 1.5rem; }
+  .tallyRow {
+    grid-template-columns: 1.2rem 2.4rem 1fr 1.8rem 2.5rem;
+    gap: 0.4rem;
+  }
+}

@@ -1,0 +1,73 @@
+.footer {
+  position: relative;
+  background: linear-gradient(160deg, #3d2b1f 0%, #5a3e2f 100%);
+  color: var(--beige);
+  text-align: center;
+  padding-bottom: 3rem;
+}
+
+.wave {
+  height: 60px;
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+}
+
+.wave svg { width: 100%; height: 100%; display: block; }
+
+.inner {
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.floaters {
+  font-size: 1.6rem;
+  letter-spacing: 0.5rem;
+  opacity: 0.55;
+}
+
+.mainText {
+  font-size: 1.1rem;
+  color: var(--beige);
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.parents { line-height: 1; }
+
+.script {
+  font-family: var(--font-script);
+  font-size: clamp(2rem, 5vw, 3rem);
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.amp {
+  font-size: 1.5rem;
+  color: var(--beige-deep);
+  opacity: 0.65;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 200px;
+  font-size: 1.1rem;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: rgba(240, 201, 110, 0.28);
+  display: block;
+}
+
+.credit {
+  font-size: 0.8rem;
+  color: rgba(245, 230, 211, 0.4);
+  letter-spacing: 0.05em;
+  margin-top: 0.25rem;
+}
