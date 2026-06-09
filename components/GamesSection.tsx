@@ -1,9 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./GamesSection.module.css";
 
-// ── localStorage key (tracks this device's vote only) ─────────────────────
+// ── localStorage keys ─────────────────────────────────────────────────────
 const LS_TEAM = "baby-shower-team";
+const LS_BOY  = "baby-shower-sim-boy";
+const LS_GIRL = "baby-shower-sim-girl";
+
+// Starting base counts — feel free to change these
+const BASE_BOY  = 14;
+const BASE_GIRL = 17;
+
+// Maximum total votes across both teams (simulation stops here)
+const MAX_TOTAL = 35;
+
+// How often (ms) a simulated vote ticks in — random between MIN and MAX
+const TICK_MIN = 20_000;   // 20 seconds
+const TICK_MAX = 45_000;   // 45 seconds
 
 // ── Animated rolling number ───────────────────────────────────────────────
 function RollingNumber({ value }: { value: number }) {
@@ -26,103 +39,74 @@ function RollingNumber({ value }: { value: number }) {
 export default function GamesSection() {
   const [mounted,   setMounted]   = useState(false);
   const [team,      setTeam]      = useState<"boy" | "girl" | null>(null);
-  const [boyCount,  setBoyCount]  = useState(0);
-  const [girlCount, setGirlCount] = useState(0);
-  const [loading,   setLoading]   = useState(false);
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [boyCount,  setBoyCount]  = useState(BASE_BOY);
+  const [girlCount, setGirlCount] = useState(BASE_GIRL);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // ── Fetch current vote totals from API ────────────────────────────────────
-  const fetchCounts = useCallback(async () => {
-    try {
-      const res  = await fetch("/api/votes");
-      const data = await res.json();
-      setBoyCount(data.boy);
-      setGirlCount(data.girl);
-    } catch {
-      // Silently ignore network errors — counts stay at last known value
-    }
-  }, []);
+  // ── Schedule the next random auto-tick ───────────────────────────────────
+  function scheduleNext(boy: number, girl: number) {
+    // Stop ticking once total reaches the cap
+    if (boy + girl >= MAX_TOTAL) return;
 
-  // ── On mount: hydrate local vote + fetch live counts ─────────────────────
+    const delay = TICK_MIN + Math.random() * (TICK_MAX - TICK_MIN);
+    timerRef.current = setTimeout(() => {
+      // Randomly add 1 to either boy or girl
+      const addToBoy = Math.random() < 0.5;
+      const newBoy  = addToBoy ? boy  + 1 : boy;
+      const newGirl = addToBoy ? girl : girl + 1;
+      // Double-check cap (in case a real guest vote pushed us over)
+      if (newBoy + newGirl > MAX_TOTAL) return;
+      setBoyCount(newBoy);
+      setGirlCount(newGirl);
+      // Persist so counts survive a page refresh
+      localStorage.setItem(LS_BOY,  String(newBoy));
+      localStorage.setItem(LS_GIRL, String(newGirl));
+      scheduleNext(newBoy, newGirl);
+    }, delay);
+  }
+
+  // ── On mount: restore persisted counts + start the ticker ────────────────
   useEffect(() => {
     setMounted(true);
     const saved = localStorage.getItem(LS_TEAM) as "boy" | "girl" | null;
     setTeam(saved);
-    fetchCounts();
 
-    // Poll every 10 s so other visitors' votes appear without a refresh
-    pollRef.current = setInterval(fetchCounts, 10_000);
-    return () => { if (pollRef.current) clearInterval(pollRef.current); };
-  }, [fetchCounts]);
+    // Restore previously stored sim counts (so they never go backwards)
+    const storedBoy  = parseInt(localStorage.getItem(LS_BOY)  ?? "", 10);
+    const storedGirl = parseInt(localStorage.getItem(LS_GIRL) ?? "", 10);
+    const boy  = isNaN(storedBoy)  ? BASE_BOY  : storedBoy;
+    const girl = isNaN(storedGirl) ? BASE_GIRL : storedGirl;
+    setBoyCount(boy);
+    setGirlCount(girl);
+
+    scheduleNext(boy, girl);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── Cast or change vote ───────────────────────────────────────────────────
-  async function pickTeam(choice: "boy" | "girl") {
-    if (loading) return;
-    const prev = team; // previous vote on this device (may be null)
-    setLoading(true);
+  function pickTeam(choice: "boy" | "girl") {
+    const prev = team;
 
-    // Optimistic UI update
-    if (prev === "boy")    setBoyCount((c) => Math.max(0, c - 1));
-    if (prev === "girl")   setGirlCount((c) => Math.max(0, c - 1));
-    if (choice === "boy")  setBoyCount((c) => c + 1);
-    if (choice === "girl") setGirlCount((c) => c + 1);
+    // Undo previous vote
+    if (prev === "boy")  setBoyCount((c) => { const n = Math.max(0, c - 1); localStorage.setItem(LS_BOY,  String(n)); return n; });
+    if (prev === "girl") setGirlCount((c) => { const n = Math.max(0, c - 1); localStorage.setItem(LS_GIRL, String(n)); return n; });
+
+    // Add new vote
+    if (choice === "boy")  setBoyCount((c)  => { const n = c + 1; localStorage.setItem(LS_BOY,  String(n)); return n; });
+    if (choice === "girl") setGirlCount((c) => { const n = c + 1; localStorage.setItem(LS_GIRL, String(n)); return n; });
+
     setTeam(choice);
     localStorage.setItem(LS_TEAM, choice);
-
-    try {
-      const res  = await fetch("/api/votes", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ team: choice, prev }),
-      });
-      const data = await res.json();
-      // Reconcile with server's authoritative counts
-      setBoyCount(data.boy);
-      setGirlCount(data.girl);
-    } catch {
-      // Network error — revert optimistic update
-      if (prev === "boy")    setBoyCount((c) => c + 1);
-      if (prev === "girl")   setGirlCount((c) => c + 1);
-      if (choice === "boy")  setBoyCount((c) => Math.max(0, c - 1));
-      if (choice === "girl") setGirlCount((c) => Math.max(0, c - 1));
-      setTeam(prev);
-      if (prev) localStorage.setItem(LS_TEAM, prev);
-      else      localStorage.removeItem(LS_TEAM);
-    } finally {
-      setLoading(false);
-    }
   }
 
   // ── Remove vote ───────────────────────────────────────────────────────────
-  async function clearVote() {
-    if (loading || !team) return;
-    const prev = team;
-    setLoading(true);
-
-    // Optimistic UI update
-    if (prev === "boy")  setBoyCount((c) => Math.max(0, c - 1));
-    if (prev === "girl") setGirlCount((c) => Math.max(0, c - 1));
+  function clearVote() {
+    if (!team) return;
+    if (team === "boy")  setBoyCount((c)  => { const n = Math.max(0, c - 1); localStorage.setItem(LS_BOY,  String(n)); return n; });
+    if (team === "girl") setGirlCount((c) => { const n = Math.max(0, c - 1); localStorage.setItem(LS_GIRL, String(n)); return n; });
     setTeam(null);
     localStorage.removeItem(LS_TEAM);
-
-    try {
-      const res  = await fetch("/api/votes", {
-        method:  "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ prev }),
-      });
-      const data = await res.json();
-      setBoyCount(data.boy);
-      setGirlCount(data.girl);
-    } catch {
-      // Revert
-      if (prev === "boy")  setBoyCount((c) => c + 1);
-      if (prev === "girl") setGirlCount((c) => c + 1);
-      setTeam(prev);
-      localStorage.setItem(LS_TEAM, prev);
-    } finally {
-      setLoading(false);
-    }
   }
 
   // ── Bar percentages ───────────────────────────────────────────────────────
@@ -160,7 +144,7 @@ export default function GamesSection() {
             <motion.button
               className={`${styles.teamBtn} ${styles.boyBtn}`}
               onClick={() => pickTeam("boy")}
-              disabled={loading}
+              disabled={false}
               whileHover={{ scale: 1.07, boxShadow: "0 10px 30px rgba(107,172,224,0.45)" }}
               whileTap={{ scale: 0.93 }}
             >
@@ -173,7 +157,7 @@ export default function GamesSection() {
             <motion.button
               className={`${styles.teamBtn} ${styles.girlBtn}`}
               onClick={() => pickTeam("girl")}
-              disabled={loading}
+              disabled={false}
               whileHover={{ scale: 1.07, boxShadow: "0 10px 30px rgba(240,127,160,0.45)" }}
               whileTap={{ scale: 0.93 }}
             >
@@ -274,7 +258,7 @@ export default function GamesSection() {
           <motion.button
             className={styles.changeBtn}
             onClick={clearVote}
-            disabled={loading}
+            disabled={false}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7 }}
