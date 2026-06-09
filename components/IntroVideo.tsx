@@ -49,6 +49,9 @@ export default function IntroVideo() {
             preload="auto"
           />
 
+          {/* Black box covers the Gemini watermark in the bottom-right corner */}
+          <div className={styles.watermarkCover} />
+
           <motion.button
             className={styles.skip}
             onClick={dismiss}

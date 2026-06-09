@@ -24,6 +24,18 @@
   object-fit: contain;
 }
 
+/* Covers the Gemini watermark that appears in the bottom-right of the video */
+.watermarkCover {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 160px;
+  height: 60px;
+  background: #000;
+  z-index: 1;
+  pointer-events: none;
+}
+
 /* Skip button — bottom-right corner */
 .skip {
   position: absolute;
